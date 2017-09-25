@@ -1,10 +1,26 @@
 import state
-import tsp_data
-import tspHelper
+from tsp_data import TSPData
+from tspHelper import TSPHelper
 
 class TSPState(state.State):
+    """Subclass representing a state of the TSP problem. Contains attributes:
+       1. tspHelper - all TSPState objects share the same instance of tspHelper object
+       2. path - This is the how a state is represented - an ordered list of cities that represents a tour
+                 Note that a TSPState is represented by a tour rather than a single city. The current city of the tour is
+                 the last city of the path
+       3. g - represents cost of the tour represented by the TSPState
+       4. h - represents heuristic function of the tour represented by the TSPState
+              h(tspState) = d1 + d2mstCost(remaining unvisited cities) + d3
+                            where d1 = Distance from the current city of the tour to the nearest unvisited city
+                                  d2 = The Cost of the Minimum Spanning Tree formed by all the unvisited cities
+                                  d3 = Shortedt distance from one of the unvisited cities back to the start city
+       5. f - is g + h
+    """
 
     def __init__(self, tspHelper, path):
+        """ Create  a TSPState. Takes 1. the tspHelper instance of the problem and
+            2. a string representing path in the format A->B->C->D
+        """
         self.tspHelper = tspHelper
         self.path = path.split('->')
         self.g = -1
@@ -15,21 +31,27 @@ class TSPState(state.State):
         return '->'.join(self.path)
     
     def isGoalState(self):
+        """Checks if starts and ends at the same city and has visited all the other cities exactly once"""
         return self.path[0] == self.tspHelper.startCity and \
                self.path[0] == self.path[-1] and \
-               set(self.path[0:-1]) == set(self.tspHelper.tspData.getAllCities())
+               sorted(self.path[0:-1]) == sorted(self.tspHelper.tspData.getAllCities())
 
     def moveToNextState(self, nextState):
-##        if(self.path != nextState.path[:-1]):
-##            print('Cannot transition to new state')
-##            return
-        nextCity = nextState.path[-1]
-        nextPath = '->'.join(self.path)
-        nextPath += '->' + nextCity
+        """Takes the necessary step to move from current state to the nextState"""
+        nextPath = '->'.join(nextState.path)
         self.tspHelper.updateVisitedCities(nextState.path)
         return nextState
 
     def getSuccessors(self):
+        """Returns a list of States representing the successors of the current.
+           A successor of the current state is formed by adding a single unvisited city
+           to the tour represented by the current state 
+        """
+
+        #No successors for a goal state
+        if self.isGoalState(): 
+            return []
+        
         successorsList = []
         unvisitedCitiesList = list(self.tspHelper.getUnvisitedCities())
         
@@ -38,6 +60,7 @@ class TSPState(state.State):
             successorPath += '->' + unvisited
             successorsList.append(TSPState(self.tspHelper, successorPath))
 
+        #If there are no unvisitedCities left then go back to the startCity
         if not unvisitedCitiesList:
             successorPath = '->'.join(self.path)
             successorPath += '->' + self.tspHelper.getStartCity()
@@ -88,22 +111,46 @@ class TSPState(state.State):
             self.f = self.gOfState() + self.hOfState()
         return self.f
 
-    def printState(self):
-        print("State = %s" % '->'.join(self.path))
+    def summary(self):
+        print(15*'=' + "State Summary" + 15*'=')
+        print("Tour = %s" % '->'.join(self.path))
+        self.fOfState()
         print('g = %d; h = %d; f = %d' % (self.g, self.h, self.f))
+        print(42*'=')
 
 if __name__ == '__main__':
-    tspData = tsp_data.TSPData('/Users/apple/Documents/Projects/randTSP/10/instance_10.txt');
+    tspData = TSPData('/Users/apple/Documents/Projects/randTSP/10/instance_10.txt');
     tspData.summary()
-    tspHelper = tspHelper.TSPHelper(tspData)
+    tspHelper = TSPHelper(tspData)
     tspHelper.setStartCity('A')
-    aState = TSPState(tspHelper, 'A->E->I->C->F->D->J->G->H->B->A')
-    print(aState.gOfState())
-##    tspHelper.visitCity('A')
-##    tspHelper.visitCity('B')
-##    tspHelper.visitCity('C')
-##    aState.printState()
-##    for successor in aState.getSuccessors():
-##        successor.printState()
+
+
+    startState = TSPState(tspHelper, 'A')
+    print('\nThis is the initial state')
+    startState.summary()
+
+    #An intermediate state of the TSP problem
+    aState = TSPState(tspHelper, 'A->E->I->C->F');
+    aState = startState.moveToNextState(aState)
+    print('\nThis is an intermediate state')
+    print('Is %s a goal state ? %r ' % (aState.getPath(), aState.isGoalState()))
+    aState.summary()
+
+    #Find all the successors of the state
+    successors = aState.getSuccessors()
+    print('The state %s has following successors:' % '->'.join(aState.path))
+    for successor in successors:
+        print(successor.getPath())
+
+    #Goal state has heuristic value as 0 and no successors
+    aGoalState = TSPState(tspHelper, 'A->E->I->C->F->D->J->G->H->B->A')
+    aGoalState = aState.moveToNextState(aGoalState)
+    print('\nThis is an intermediate state')
+    print('Is %s a goal state ? %r ' % (aGoalState.getPath(), aGoalState.isGoalState()))
+    aGoalState.summary()
+    successors = aGoalState.getSuccessors()
+    print('No of successors for a goal state = %d' % len(successors))
+    
+
 
     
