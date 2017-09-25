@@ -7,7 +7,6 @@ class TSPHelper:
         self.visitedCities = set()
         self.unvisitedCities = set(tspData.getAllCities())
         self.startCity = None
-        self.nextCity = None
 
     def getVisitedCities(self):
         return self.visitedCities
@@ -26,12 +25,12 @@ class TSPHelper:
     def getStartCity(self):
         return self.startCity
 
-    def setNextCity(self, city):
-        self.nextCity = city
-
-    def getNextCity(self):
-        return self.nextCity
-
+    def updateVisitedCities(self, visitedCitiesList):
+        self.visitedCities = set(visitedCitiesList)
+        self.unvisitedCities = set(self.tspData.getAllCities())
+        for city in self.visitedCities:
+            self.unvisitedCities.discard(city)
+        
 
 if __name__ == '__main__':
     tspData = tsp_data.TSPData('/Users/apple/Documents/Projects/randTSP/6/instance_5.txt');
@@ -40,6 +39,9 @@ if __name__ == '__main__':
     print(tspHelper.getVisitedCities())
     print(tspHelper.getUnvisitedCities())
     tspHelper.visitCity('A')
+    print(tspHelper.getVisitedCities())
+    print(tspHelper.getUnvisitedCities())
+    tspHelper.updateVisitedCities(['A', 'B', 'C'])
     print(tspHelper.getVisitedCities())
     print(tspHelper.getUnvisitedCities())
 

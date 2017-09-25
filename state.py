@@ -6,7 +6,7 @@ class State:
     def isGoalState(self):
         raise NotImplementedError("Subclass must implement abstract method")
 
-    def moveToNextState(self):
+    def moveToNextState(self, State):
         raise NotImplementedError("Subclass must implement abstract method")          
 
     def getSuccessors(self):
@@ -20,6 +20,8 @@ class State:
 
     def fOfState(self):
         raise NotImplementedError("Subclass must implement abstract method")
+
+
 
     
 

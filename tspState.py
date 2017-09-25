@@ -11,17 +11,23 @@ class TSPState(state.State):
         self.h = -1
         self.f = -1
 
+    def getPath(self):
+        return '->'.join(self.path)
+    
     def isGoalState(self):
         return self.path[0] == self.tspHelper.startCity and \
                self.path[0] == self.path[-1] and \
                set(self.path[0:-1]) == set(self.tspHelper.tspData.getAllCities())
 
-    def moveToNextState(self):
-        nextCity = self.tspHelper.getNextCity()
+    def moveToNextState(self, nextState):
+##        if(self.path != nextState.path[:-1]):
+##            print('Cannot transition to new state')
+##            return
+        nextCity = nextState.path[-1]
         nextPath = '->'.join(self.path)
         nextPath += '->' + nextCity
-        self.tspHelper.visitCity(nextCity)
-        return TSPState(self.tspHelper, nextPath)
+        self.tspHelper.updateVisitedCities(nextState.path)
+        return nextState
 
     def getSuccessors(self):
         successorsList = []
@@ -36,16 +42,6 @@ class TSPState(state.State):
             successorPath = '->'.join(self.path)
             successorPath += '->' + self.tspHelper.getStartCity()
             successorsList.append(TSPState(self.tspHelper, successorPath))
-            
-        minimumF = 999999
-        minSuccessor = None
-        for successor in successorsList:
-            if successor.fOfState() < minimumF:
-                minimumF = successor.fOfState()
-                minSuccessor = successor
-                
-        if minSuccessor != None:
-            self.tspHelper.setNextCity(minSuccessor.path[-1])
 
         return successorsList
 
@@ -97,17 +93,17 @@ class TSPState(state.State):
         print('g = %d; h = %d; f = %d' % (self.g, self.h, self.f))
 
 if __name__ == '__main__':
-    tspData = tsp_data.TSPData('/Users/apple/Documents/Projects/randTSP/6/instance_5.txt');
+    tspData = tsp_data.TSPData('/Users/apple/Documents/Projects/randTSP/10/instance_10.txt');
     tspData.summary()
     tspHelper = tspHelper.TSPHelper(tspData)
     tspHelper.setStartCity('A')
-    aState = TSPState(tspHelper, 'A->B->C->D->E->F->A')
+    aState = TSPState(tspHelper, 'A->E->I->C->F->D->J->G->H->B->A')
     print(aState.gOfState())
-    tspHelper.visitCity('A')
-    tspHelper.visitCity('B')
-    tspHelper.visitCity('C')
-    aState.printState()
-    for successor in aState.getSuccessors():
-        successor.printState()
+##    tspHelper.visitCity('A')
+##    tspHelper.visitCity('B')
+##    tspHelper.visitCity('C')
+##    aState.printState()
+##    for successor in aState.getSuccessors():
+##        successor.printState()
 
-    print(tspHelper.getNextCity())
+    
