@@ -103,7 +103,7 @@ class TSPState(state.State):
                 if dist < distanceBackToStart:
                     distanceBackToStart = dist
 
-        self.h = distanceToNearestUnvisited + mstPathCost + distanceBackToStart
+            self.h = distanceToNearestUnvisited + mstPathCost + distanceBackToStart
         return self.h
             
     def fOfState(self):

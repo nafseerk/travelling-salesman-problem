@@ -28,6 +28,9 @@ class TSPOpenList(OpenList):
         self.size -= 1
         return heapq.heappop(self.heap)[2]
 
+    def getExpandedStatesCount(self):
+        return self.counter
+
     def summary(self):
         print(15*'=' + 'OpenList Summary' + 15*'=')
         print('Open List Size = %d' % self.size)

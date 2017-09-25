@@ -1,46 +1,47 @@
-import tsp_data
-import tspHelper
-import tspState
-import tsp_open_list
+from tsp_data import TSPData
+from tspHelper import TSPHelper
+from tspState import TSPState
+from tsp_open_list import TSPOpenList
+from tsp_closed_list import TSPClosedList
 import pprint
-import tsp_closed_list
 
+def AstarSearch(initialState, openList, closedList, verbose=0):
+    if verbose == 2: print('Astar search starting with state:' + initialState.getPath())
+    openList.add(initialState)
+    currentState = openList.getItem()
+    
+    while not currentState.isGoalState(): 
+        if verbose == 2: print('At state:' + currentState.getPath())
 
-def AstarSearch(initialState, openList, closedList):
-    currentState = initialState
-    #print('Astar search starting with state:')
-    #print(currentState.path)
-    while not currentState.isGoalState(): #add openList not empty condition
-        #print('Astar examining state')
-        #print(currentState.path)
+        #Add the current state into closedList
+        closedList.add(currentState)
+        
+        #Generate all successors of current state and add them to openList if not already closed
         successors = currentState.getSuccessors()
         for successor in successors:
             if closedList.hasState(successor) == False:
                 openList.add(successor)
 
-        #print('Open List now = ')
-        #openList.print()
-        chosenSuccessor = openList.getItem()
-        #pp = pprint.PrettyPrinter(indent=4)
-        
-        #print('minimum f state value:')
-        #print(chosenSuccessor.fOfState())
-        currentState = currentState.moveToNextState(chosenSuccessor)
-        closedList.add(chosenSuccessor)
-        #print('Astar moving to nextState')
-        #print(currentState.path)
-        #input('Enter to continue.....')
+        nextState = openList.getItem()
+        currentState = currentState.moveToNextState(nextState)
+        if verbose == 2: print('Moving to next state:%s with f=%.2f g=%.2f h=%.2f' \
+                          % (nextState.getPath(), nextState.fOfState(), nextState.gOfState(), nextState.hOfState()))
 
-    print("The solution is:")
-    currentState.printState()
-    print("The cost is: %f" % currentState.gOfState())
+    if verbose >= 1:
+        print('A* search complete: Solution = %s with cost = %.2f' % (currentState.getPath(), currentState.gOfState()))
+        print('No of nodes expanded = %d' % openList.getExpandedStatesCount())
+    return currentState 
 
 
 if __name__ == '__main__':
-    tspData = tsp_data.TSPData('/Users/apple/Documents/Projects/randTSP/16/instance_10.txt')
-    tspHelper = tspHelper.TSPHelper(tspData)
+    #Test the A*search
+    tspData = TSPData('/Users/apple/Documents/Projects/randTSP/10/instance_10.txt')
+    print('Testing A*search on the below data')
+    tspData.summary()
+    tspHelper = TSPHelper(tspData)
     tspHelper.setStartCity('A')
-    initialState = tspState.TSPState(tspHelper,'A')
-    openList = tsp_open_list.TSPOpenList()
-    closedList = tsp_closed_list.TSPClosedList()
-    AstarSearch(initialState, openList, closedList)
+    initialState = TSPState(tspHelper,'A')
+    openList = TSPOpenList()
+    closedList = TSPClosedList()
+    goalState = AstarSearch(initialState, openList, closedList, verbose=1)
+    print('Tour for the salesman = %s with distance = %.2f units' % (goalState.getPath(), goalState.gOfState()))
