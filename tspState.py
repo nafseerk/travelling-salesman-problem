@@ -10,7 +10,7 @@ class TSPState(state.State):
                  the last city of the path
        3. g - represents cost of the tour represented by the TSPState
        4. h - represents heuristic function of the tour represented by the TSPState
-              h(tspState) = d1 + d2mstCost(remaining unvisited cities) + d3
+              h(tspState) = d1 + d2( mstCost of remaining unvisited cities) + d3
                             where d1 = Distance from the current city of the tour to the nearest unvisited city
                                   d2 = The Cost of the Minimum Spanning Tree formed by all the unvisited cities
                                   d3 = Shortedt distance from one of the unvisited cities back to the start city
@@ -78,33 +78,35 @@ class TSPState(state.State):
         return self.g
 
     def hOfState(self):
-        #hOfState = 1. distanceToNearestUnvisited + 2. mstPathCost (of unvisited cities) + 3. distanceBackToStart
-        if self.h == -1:
-            unvisitedCitiesList = list(self.tspHelper.getUnvisitedCities())
-            if len(unvisitedCitiesList) == 0:
-                self.h = 0
-                return 0
-            
-            #1. Get the distance from current city to nearest unvisited city
-            currentCity = self.path[-1]
-            distanceToNearestUnvisited = 0
-            for unvisited in unvisitedCitiesList:
-                dist = self.tspHelper.tspData.getDistance(currentCity, unvisited)
-                if dist < distanceToNearestUnvisited:
-                    distanceToNearestUnvisited = dist
+        if self.tspHelper.noHeuristic == False:
+            #hOfState = 1. distanceToNearestUnvisited + 2. mstPathCost (of unvisited cities) + 3. distanceBackToStart
+            if self.h == -1:
+                unvisitedCitiesList = list(self.tspHelper.getUnvisitedCities())
+                if len(unvisitedCitiesList) == 0:
+                    self.h = 0
+                    return 0
+                
+                #1. Get the distance from current city to nearest unvisited city
+                currentCity = self.path[-1]
+                distanceToNearestUnvisited = 0
+                for unvisited in unvisitedCitiesList:
+                    dist = self.tspHelper.tspData.getDistance(currentCity, unvisited)
+                    if dist < distanceToNearestUnvisited:
+                        distanceToNearestUnvisited = dist
 
-            #2. Get the cost of the minimum spanning tree of remaining unvisited cities
-            mstPathCost = self.tspHelper.tspData.getMinimumSpanningTreeCost(unvisitedCitiesList, unvisitedCitiesList[0])
+                #2. Get the cost of the minimum spanning tree of remaining unvisited cities
+                mstPathCost = self.tspHelper.tspData.getMinimumSpanningTreeCost(unvisitedCitiesList, unvisitedCitiesList[0])
 
-            #3. Get the nearest distance to start city from univisited city
-            distanceBackToStart = 0
-            for unvisited in unvisitedCitiesList:
-                dist = self.tspHelper.tspData.getDistance(self.tspHelper.startCity, unvisited)
-                if dist < distanceBackToStart:
-                    distanceBackToStart = dist
+                #3. Get the nearest distance to start city from univisited city
+                distanceBackToStart = 0
+                for unvisited in unvisitedCitiesList:
+                    dist = self.tspHelper.tspData.getDistance(self.tspHelper.startCity, unvisited)
+                    if dist < distanceBackToStart:
+                        distanceBackToStart = dist
 
-            self.h = distanceToNearestUnvisited + mstPathCost + distanceBackToStart
-        return self.h
+                self.h = distanceToNearestUnvisited + mstPathCost + distanceBackToStart
+            return self.h
+        else: return 0
             
     def fOfState(self):
         if self.f == -1:

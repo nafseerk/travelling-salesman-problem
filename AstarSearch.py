@@ -10,7 +10,7 @@ def AstarSearch(initialState, openList, closedList, verbose=0):
     openList.add(initialState)
     currentState = openList.getItem()
     
-    while not currentState.isGoalState(): 
+    while not currentState.isGoalState():
         if verbose == 2: print('At state:' + currentState.getPath())
 
         #Add the current state into closedList
@@ -35,10 +35,11 @@ def AstarSearch(initialState, openList, closedList, verbose=0):
 
 if __name__ == '__main__':
     #Test the A*search
-    tspData = TSPData('/Users/apple/Documents/Projects/randTSP/10/instance_10.txt')
+    inputFilePath = '/Users/apple/Documents/Projects/randTSP/14/instance_8.txt'
+    tspData = TSPData(inputFilePath)
     print('Testing A*search on the below data')
     tspData.summary()
-    tspHelper = TSPHelper(tspData)
+    tspHelper = TSPHelper(tspData, noHeuristic=False)
     tspHelper.setStartCity('A')
     initialState = TSPState(tspHelper,'A')
     openList = TSPOpenList()

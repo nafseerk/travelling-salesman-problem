@@ -7,10 +7,7 @@ class TSPData:
         1. The no of cities - citiesCount
         2. The names/Ids of the cities - citiesNames
         3. The x,y coordinates of the cities - citiesCoordinates
-    """
-    citiesCount = 0
-    citiesNames = []
-    citiesCoordinates = {}
+    """   
     
     def __init__(self, inputFileName):
         """ Loads the data from the input file. Assumes the format:
@@ -22,6 +19,8 @@ class TSPData:
         f.close()
         
         self.citiesCount=int(lines[0])
+        self.citiesNames = []
+        self.citiesCoordinates = {}
 
         for line in lines[1:]:
             cityId, cityX, cityY = line.split(' ')
@@ -40,13 +39,13 @@ class TSPData:
     def getAllCities(self):
         return self.citiesNames
         
-    def summary(self):
-        print(15*'=' + "Data Summary" + 15*'=')
-        print('No of cities = %d' % self.citiesCount)
+    def summary(self, file=None):
+        print(15*'=' + "Data Summary" + 15*'=', file=file)
+        print('No of cities = %d' % self.citiesCount, file=file)
         headers = ['City', 'X-coordinate', 'Y-coordinate']
         data = sorted([(k,v[0],v[1]) for k,v in self.citiesCoordinates.items()])
-        print(tabulate(data, headers=headers))
-        print(42*'=')
+        print(tabulate(data, headers=headers), file=file)
+        print(42*'=', file=file)
 
     def getMinimumSpanningTreeCost(self, citiesList, startCity):
         """Calculate the cost of all the edges of the Minimum Spanning Tree

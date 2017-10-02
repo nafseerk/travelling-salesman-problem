@@ -10,11 +10,12 @@ class TSPHelper:
     """
 
     #TODO - should have an attribute for the current tour
-    def __init__(self, tspData):
+    def __init__(self, tspData, noHeuristic=False):
         self.tspData = tspData
         self.visitedCities = set()
         self.unvisitedCities = set(tspData.getAllCities())
         self.startCity = None
+        self.noHeuristic = noHeuristic
 
     def getVisitedCities(self):
         return self.visitedCities

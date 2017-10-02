@@ -1,0 +1,11 @@
+===============Data Summary===============
+No of cities = 4
+City      X-coordinate    Y-coordinate
+------  --------------  --------------
+A                   61              78
+B                   27              65
+C                   60              24
+D                   38              45
+==========================================
+Tour for the salesman = A->B->D->C->A with distance = 143.65 units
+Number of nodes expanded: 22
