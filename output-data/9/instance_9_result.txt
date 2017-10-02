@@ -1,0 +1,16 @@
+===============Data Summary===============
+No of cities = 9
+City      X-coordinate    Y-coordinate
+------  --------------  --------------
+A                   91              21
+B                   90              29
+C                   32              29
+D                   88              89
+E                   20              28
+F                   58              54
+G                   94              25
+H                   14              12
+I                   51              50
+==========================================
+Tour for the salesman = A->G->B->D->F->I->C->E->H->A with distance = 259.82 units
+Number of nodes expanded: 30104
