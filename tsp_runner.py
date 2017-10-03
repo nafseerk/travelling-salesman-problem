@@ -25,14 +25,21 @@ def runOnFile(inputFilePath, version, outputDirectory):
     closedList = TSPClosedList()
     goalState = a_star.AstarSearch(initialState, openList, closedList)
     with open(solutionFilePath, 'w') as f:
-        tspData.summary(file=f)
-        print('Tour for the salesman = %s with distance = %.2f units' % (goalState.getPath(), goalState.gOfState()), file=f)
-        print('Number of nodes expanded: %d' % openList.getExpandedStatesCount(), file=f)
+        if goalState != None:
+            tspData.summary(file=f)
+            print('Tour for the salesman = %s with distance = %.2f units' % (goalState.getPath(), goalState.gOfState()), file=f)
+            print('Number of nodes expanded: %d' % openList.getExpandedStatesCount(), file=f)
+        else:
+            tspData.summary(file=f)
+            print('No solution found', file=f)
     with open(countFilePath, 'w') as f:
-        print(openList.getExpandedStatesCount(), file=f)
+        if goalState == None:
+             print(-1, file=f)
+        else:
+            print(openList.getExpandedStatesCount(), file=f)
 
-def runOnDataSet(inputRootDirectory):
-    outputRootDirectory = os.path.join(os.path.abspath(os.path.join(inputRootDirectory, os.pardir)), 'output-data')
+def runOnDataSet(inputRootDirectory, version):
+    outputRootDirectory = os.path.join(os.path.abspath(os.path.join(inputRootDirectory, os.pardir)), 'output-data-' + version)
     if not os.path.exists(outputRootDirectory):
         os.makedirs(outputRootDirectory)
 
@@ -43,13 +50,19 @@ def runOnDataSet(inputRootDirectory):
             for file in os.listdir(os.path.join(inputRootDirectory, directory)):
                 if file.endswith(".txt"):
                     fullFilePath = os.path.join(os.path.join(inputRootDirectory, directory), file)
-                    print('A* search on %s cities: %s started' % (directory, file))
-                    runOnFile(fullFilePath, 'v1',  outputDirectory)
-                    print('A* search on %s cities: %s completed' % (directory, file))
-##                    print('A* search with no heuristic on %s cities: %s started' % (directory, file))
-##                    runOnFile(fullFilePath, 'v2',  outputDirectory)
-##                    print('A* search with no heuristic on %s cities: %s completed' % (directory, file))
+                    if version == 'v1':
+                        print('A* search on %s cities: %s started' % (directory, file))
+                        runOnFile(fullFilePath, version ,  outputDirectory)
+                        print('A* search on %s cities: %s completed' % (directory, file))
+                    elif version == 'v2':
+                        print('A* search with no heuristic on %s cities: %s started' % (directory, file))
+                        runOnFile(fullFilePath, version,  outputDirectory)
+                        print('A* search with no heuristic on %s cities: %s completed' % (directory, file))
                     
-        
+
+#set path of input data here        
 inputRootDirectory = '/Users/apple/Documents/git-repos/tsp/travelling-salesman-problem/input-data'
-runOnDataSet(inputRootDirectory)
+
+#'v1' for search with heuristic and 'v2' for heuristic h(n) = 0
+version = 'v1'
+runOnDataSet(inputRootDirectory, version)
