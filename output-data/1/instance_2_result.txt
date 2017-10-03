@@ -1,8 +1,0 @@
-===============Data Summary===============
-No of cities = 1
-City      X-coordinate    Y-coordinate
-------  --------------  --------------
-A                   30              26
-==========================================
-Tour for the salesman = A->A with distance = 0.00 units
-Number of nodes expanded: 2
